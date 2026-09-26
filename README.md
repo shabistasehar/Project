@@ -6,7 +6,7 @@ It is **strictly not a chatbot**: raw model text never reaches the interface. Al
 
 ---
 
-## ⚡ Quick Start (Local Setup)
+##  Quick Start (Local Setup)
 
 ### Prerequisites
 - **Node.js**: v18+ (tested on Node.js v24.19 LTS)
@@ -38,7 +38,7 @@ This runs both the Express backend proxy (`http://localhost:3001`) and Vite fron
 
 ---
 
-## 🛡️ Architecture & Security (Zero Key Leakage)
+##  Architecture & Security (Zero Key Leakage)
 
 ```mermaid
 flowchart TD
@@ -63,7 +63,7 @@ The frontend code contains **zero** references to `GROQ_API_KEY` or `VITE_GROQ_A
 
 ---
 
-## 🔒 Locked Data Shape & Defensive Validation
+##  Locked Data Shape & Defensive Validation
 
 The application requires strict adherence to this locked JSON schema:
 
@@ -88,7 +88,7 @@ Following the official assignment reference pattern, `validateResult(raw)` is a 
 
 ---
 
-## 🔄 Mandatory Pure-CSS 3D Flip Card System
+##  Mandatory Pure-CSS 3D Flip Card System
 
 Zero JavaScript animation libraries or bloated CSS frameworks are used for the 3D flip. The layout conforms strictly to the assignment's locked structure:
 
@@ -120,7 +120,7 @@ Zero JavaScript animation libraries or bloated CSS frameworks are used for the 3
 
 ---
 
-## 🎯 Quiz Mode & "Re-Test Only Wrong Answers"
+##  Quiz Mode & "Re-Test Only Wrong Answers"
 
 The interactive Quiz Mode enables focused recall and spaced self-testing:
 1. **Show Question**: Displays question card with answer hidden.
@@ -132,7 +132,7 @@ The interactive Quiz Mode enables focused recall and spaced self-testing:
 
 ---
 
-## 🚨 Failure Handling Resilience Matrix
+##  Failure Handling Resilience Matrix
 
 | Failure Mode | Trigger / Root Cause | Handling Mechanism | User-Visible Feedback |
 | :--- | :--- | :--- | :--- |
@@ -145,7 +145,7 @@ The interactive Quiz Mode enables focused recall and spaced self-testing:
 
 ---
 
-## 🎨 Anti-AI-Slop Design System (Quizlet-Inspired)
+##  Anti-AI-Slop Design System (Quizlet-Inspired)
 
 Designed intentionally to feel like a high-focus academic web tool, avoiding generic AI slop:
 - **Soft Slate Canvas**: Clean `bg-slate-50` backdrop with a white centered card.
@@ -169,18 +169,8 @@ Designed intentionally to feel like a high-focus academic web tool, avoiding gen
 
 ---
 
-## 🚀 Deployment (Vercel)
 
-The repository is configured for one-click deployment on Vercel:
-1. Push your repository to GitHub.
-2. Import the project into [Vercel](https://vercel.com).
-3. Set the Environment Variable:
-   - `GROQ_API_KEY`: `gsk_your_groq_api_key_here`
-4. Deploy! `vercel.json` and `api/generate.js` handle serverless routing automatically.
-
----
-
-## 🤖 Honest AI-Usage Disclosure
+## Honest AI-Usage Disclosure
 
 In accordance with Section 8 of the assignment guidelines:
 - **What AI was used for**:
@@ -195,7 +185,7 @@ In accordance with Section 8 of the assignment guidelines:
 
 ---
 
-## ⏱️ Time Spent Breakdown
+##  Time Spent Breakdown
 
 | Task Area | Estimated Time | Actual Time |
 | :--- | :--- | :--- |
@@ -212,7 +202,7 @@ In accordance with Section 8 of the assignment guidelines:
 
 ---
 
-## ⚠️ Known Limitations & Future Enhancements
+##  Known Limitations & Future Enhancements
 
 1. **Session Scope**: Cards and quiz scores reside in React component memory; refreshing the page resets the session. (Persistent local storage could be added as a stretch goal).
 2. **Context Window Limits**: Extremely long textbook chapters pasted into the textarea may exceed single-turn Groq completion tokens; chunking could be implemented for multi-page documents.
