@@ -9,25 +9,40 @@ import { validateResult } from './lib/validateResult.js';
 
 export default function App() {
   const [status, setStatus] = useState('IDLE'); // 'IDLE' | 'LOADING' | 'SUCCESS' | 'ERROR'
+  const [inputMode, setInputMode] = useState('notes'); // 'notes' | 'topic'
   const [prompt, setPrompt] = useState('');
+  const [topic, setTopic] = useState('');
+  const [lastRequestParams, setLastRequestParams] = useState(null);
   const [cards, setCards] = useState(null);
   const [error, setError] = useState(null);
 
   // Stale-response guard using a monotonic request-id ref
   const requestId = useRef(0);
 
-  const handleGenerate = async (customPrompt) => {
-    const textToSubmit = typeof customPrompt === 'string' ? customPrompt : prompt;
-    if (!textToSubmit || !textToSubmit.trim()) {
+  const handleGenerate = async (params) => {
+    let payload;
+    if (typeof params === 'string') {
+      payload = { prompt: params, mode: 'notes' };
+    } else if (params && typeof params === 'object') {
+      payload = params;
+    } else {
+      payload = inputMode === 'topic'
+        ? { topic, mode: 'topic' }
+        : { prompt, mode: 'notes' };
+    }
+
+    const contentToCheck = payload.mode === 'topic' ? payload.topic : payload.prompt;
+    if (!contentToCheck || !contentToCheck.trim()) {
       return;
     }
 
+    setLastRequestParams(payload);
     const currentId = ++requestId.current;
     setStatus('LOADING');
     setError(null);
 
     try {
-      const raw = await generateFlashcards(textToSubmit);
+      const raw = await generateFlashcards(payload);
 
       // Guard against stale responses resolving out of order
       if (currentId !== requestId.current) {
@@ -54,9 +69,16 @@ export default function App() {
     }
   };
 
-  const handleSelectSampleTopic = (sampleText) => {
+  const handleSelectSampleNotes = (sampleText) => {
+    setInputMode('notes');
     setPrompt(sampleText);
-    handleGenerate(sampleText);
+    handleGenerate({ prompt: sampleText, mode: 'notes' });
+  };
+
+  const handleSelectSampleTopic = (sampleTopic) => {
+    setInputMode('topic');
+    setTopic(sampleTopic);
+    handleGenerate({ topic: sampleTopic, mode: 'topic' });
   };
 
   const handleNewDeck = () => {
@@ -65,7 +87,7 @@ export default function App() {
     setError(null);
   };
 
-  const handleEditNotes = () => {
+  const handleEditInput = () => {
     setStatus('IDLE');
     setError(null);
   };
@@ -78,7 +100,7 @@ export default function App() {
           <div className="flex items-center gap-2">
             <span className="text-xl font-bold tracking-tight text-slate-900">Study Assistant</span>
             <span className="text-xs font-semibold px-2 py-0.5 rounded-full bg-slate-100 text-slate-600 border border-slate-200">
-              Flam Assignment
+              Notes • Files • Topics
             </span>
           </div>
 
@@ -97,13 +119,20 @@ export default function App() {
       {/* Main Content State Router */}
       <main className="max-w-4xl mx-auto px-4 py-8 flex-1 w-full flex flex-col justify-center">
         {status === 'IDLE' && (
-          <div className="flex flex-col gap-8">
+          <div className="flex flex-col gap-6">
             <PromptInput
               prompt={prompt}
               setPrompt={setPrompt}
-              onSubmit={() => handleGenerate(prompt)}
+              topic={topic}
+              setTopic={setTopic}
+              inputMode={inputMode}
+              setInputMode={setInputMode}
+              onSubmit={handleGenerate}
             />
-            <EmptyState onSelectTopic={handleSelectSampleTopic} />
+            <EmptyState
+              onSelectSampleNotes={handleSelectSampleNotes}
+              onSelectSampleTopic={handleSelectSampleTopic}
+            />
           </div>
         )}
 
@@ -114,8 +143,8 @@ export default function App() {
         {status === 'ERROR' && (
           <ErrorState
             error={error}
-            onRetry={() => handleGenerate(prompt)}
-            onEditPrompt={handleEditNotes}
+            onRetry={() => handleGenerate(lastRequestParams)}
+            onEditPrompt={handleEditInput}
           />
         )}
 

@@ -2,11 +2,14 @@ import React from 'react';
 
 /**
  * Text-only EmptyState component (strictly anti-AI-slop, no decorative illustrations).
- * Features simple guiding copy and interactive sample topic buttons.
+ * Features simple guiding copy and interactive sample buttons.
  *
- * @param {{ onSelectTopic: (topicText: string) => void }} props
+ * @param {{
+ *   onSelectSampleNotes: (text: string) => void,
+ *   onSelectSampleTopic: (topicTitle: string) => void
+ * }} props
  */
-export default function EmptyState({ onSelectTopic }) {
+export default function EmptyState({ onSelectSampleNotes, onSelectSampleTopic }) {
   const sampleTopics = [
     {
       title: 'Cellular Respiration',
@@ -28,10 +31,10 @@ export default function EmptyState({ onSelectTopic }) {
         Ready to Study
       </span>
       <h2 className="text-lg font-semibold text-slate-800 mt-2">
-        Paste your notes to generate flashcards
+        Choose your study method
       </h2>
       <p className="text-sm text-slate-500 mt-2 max-w-sm mx-auto leading-relaxed">
-        Enter lecture notes, definitions, or study material in the text box above to create study flashcards and an interactive quiz.
+        Paste lecture notes, upload a study document (<span className="font-mono text-slate-600">.pdf, .txt, .md</span>), or simply specify any topic name to generate flashcards and an interactive quiz.
       </p>
 
       <div className="mt-6 pt-6 border-t border-slate-100">
@@ -39,14 +42,20 @@ export default function EmptyState({ onSelectTopic }) {
           Or try a sample topic:
         </p>
         <div className="flex flex-wrap gap-2 justify-center">
-          {sampleTopics.map((topic) => (
+          {sampleTopics.map((item) => (
             <button
-              key={topic.title}
+              key={item.title}
               type="button"
-              onClick={() => onSelectTopic && onSelectTopic(topic.prompt)}
+              onClick={() => {
+                if (onSelectSampleNotes) {
+                  onSelectSampleNotes(item.prompt);
+                } else if (onSelectSampleTopic) {
+                  onSelectSampleTopic(item.title);
+                }
+              }}
               className="min-h-9 px-3.5 py-1.5 rounded-lg border border-slate-200 bg-slate-50 text-slate-700 text-xs font-medium hover:bg-slate-100 hover:border-slate-300 transition-colors"
             >
-              {topic.title}
+              {item.title}
             </button>
           ))}
         </div>

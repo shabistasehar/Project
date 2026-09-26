@@ -4,11 +4,16 @@ export default async function handler(req, res) {
   }
 
   try {
-    const { prompt } = req.body || {};
+    const { prompt, topic, mode = 'notes' } = req.body || {};
 
-    if (!prompt || typeof prompt !== 'string' || !prompt.trim()) {
+    const isTopicMode = mode === 'topic' || (!prompt && Boolean(topic));
+    const contentToUse = isTopicMode ? topic : prompt;
+
+    if (!contentToUse || typeof contentToUse !== 'string' || !contentToUse.trim()) {
       return res.status(400).json({
-        error: 'Please provide valid, non-empty study notes or topic text.',
+        error: isTopicMode
+          ? 'Please specify a valid topic name (e.g. Photosynthesis, React Hooks, French Revolution).'
+          : 'Please provide valid, non-empty study notes or upload a notes file.',
       });
     }
 
@@ -19,7 +24,20 @@ export default async function handler(req, res) {
       });
     }
 
-    const systemPrompt = `You are a specialized study assistant. Given notes or a topic from the user, generate between 3 and 10 high-quality, concise study flashcards.
+    const systemPrompt = isTopicMode
+      ? `You are an expert educator and study assistant. The user wants to learn about the topic: "${contentToUse.trim()}". Generate between 4 and 10 high-quality, comprehensive study flashcards that thoroughly teach this topic from fundamentals to key concepts, core mechanisms or principles, and real-world applications. Ensure questions test deep understanding rather than superficial trivia.
+Return ONLY the JSON object. No markdown, no code fences, no explanations, no extra keys, no introductory or closing text.
+The JSON must strictly conform to this schema:
+{
+  "cards": [
+    {
+      "id": "card-1",
+      "question": "Clear, concise question",
+      "answer": "Accurate, digestible answer"
+    }
+  ]
+}`
+      : `You are a specialized study assistant. Given study notes or text from the user, generate between 3 and 10 high-quality, concise study flashcards that directly test the key concepts, definitions, and facts in these notes.
 Return ONLY the JSON object. No markdown, no code fences, no explanations, no extra keys, no introductory or closing text.
 The JSON must strictly conform to this schema:
 {
@@ -32,6 +50,10 @@ The JSON must strictly conform to this schema:
   ]
 }`;
 
+    const userContent = isTopicMode
+      ? `Topic to study:\n${contentToUse.trim()}`
+      : `Study Notes / Text:\n${contentToUse.trim()}`;
+
     const groqResponse = await fetch('https://api.groq.com/openai/v1/chat/completions', {
       method: 'POST',
       headers: {
@@ -42,7 +64,7 @@ The JSON must strictly conform to this schema:
         model: 'openai/gpt-oss-120b',
         messages: [
           { role: 'system', content: systemPrompt },
-          { role: 'user', content: `Study Notes / Topic:\n${prompt.trim()}` },
+          { role: 'user', content: userContent },
         ],
         response_format: { type: 'json_object' },
         temperature: 0.3,

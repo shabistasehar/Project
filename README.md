@@ -1,8 +1,16 @@
 # Flam Study Assistant
 
-A reliable, clean, production-ready AI-powered study assistant built for the **Flam Frontend Internship Assignment**. The application transforms free-form study notes or topics into high-yield, interactive flashcards using the Groq LLM API.
+A reliable, clean, production-ready AI-powered study assistant built for the **Flam Frontend Internship Assignment**. The application transforms study notes, uploaded documents, or specified topic names into high-yield, interactive flashcards using the Groq LLM API.
 
 It is **strictly not a chatbot**: raw model text never reaches the interface. All LLM responses are constrained to a locked JSON schema, defensively validated, and rendered through two dedicated interactive modes: a **Flashcard Deck** with pure-CSS 3D flip physics and a **Quiz Mode** with live scoring and targeted wrong-answer re-testing.
+
+---
+
+## ✨ Core Creation Workflows
+
+1. **Study Notes (Direct Input)**: Paste lecture notes, textbook summaries, definitions, or article excerpts into the clean notes editor.
+2. **Document Upload**: Drag & drop or upload study files (<span className="font-mono">.pdf, .txt, .md, .csv, .json</span>). Text is automatically extracted, word-counted, and populated for immediate study card generation.
+3. **Generate by Topic**: No notes required. Simply specify any subject or concept (e.g. *Cellular Respiration, JavaScript Event Loop, Quantum Computing, French Revolution*), and the AI designs comprehensive, curriculum-aligned study cards directly covering fundamentals, principles, and real-world applications.
 
 ---
 
@@ -42,11 +50,14 @@ This runs both the Express backend proxy (`http://localhost:3001`) and Vite fron
 
 ```mermaid
 flowchart TD
-    User["User pastes notes/topic"] --> Input["PromptInput.jsx"]
+    User["User: Notes, File Upload (.pdf/.txt), or Topic Name"] --> Input["PromptInput.jsx"]
+    Input -- File Upload --> Extract["lib/api.js (POST /api/extract)"]
+    Extract --> PDFEngine["Backend PDF Parser / FileReader"]
+    PDFEngine --> Input
     Input --> Guard["App.jsx (monotonic requestId ref)"]
     Guard --> API["lib/api.js (POST /api/generate)"]
     API --> Proxy["Backend Proxy: server/index.js (Local) or api/generate.js (Vercel)"]
-    Proxy --> Groq["Groq API (llama-3.3-70b-versatile, json_object mode)"]
+    Proxy --> Groq["Groq API (openai/gpt-oss-120b, json_object mode)"]
     Groq --> Proxy
     Proxy --> API
     API --> Validator["lib/validateResult.js"]
@@ -58,7 +69,7 @@ flowchart TD
 ### API Key Protection
 The frontend code contains **zero** references to `GROQ_API_KEY` or `VITE_GROQ_API_KEY`.
 - In local development, Vite proxies `/api` requests to a minimal Express proxy (`server/index.js`).
-- In production on Vercel, requests to `/api/generate` execute via a serverless function (`api/generate.js`).
+- In production on Vercel, requests to `/api/generate` and `/api/extract` execute via serverless functions (`api/generate.js`, `api/extract.js`).
 - **Production Bundle Audit Verified**: A full regex search across all production distribution files in `dist/assets/*.js` confirms 0 matches for `GROQ_API_KEY`.
 
 ---
@@ -107,7 +118,7 @@ Zero JavaScript animation libraries or bloated CSS frameworks are used for the 3
 
 ### CSS Implementation (`src/index.css`)
 - **`.scene`**: `perspective: 1000px`, `width: 100%`.
-- **`.card`**: `position: relative`, `transform-style: preserve-3d`, `transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1)`.
+- **`.card`**: `position: relative`, `transform-style: preserve-3d`, `transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1)`.
 - **`.card.is-flipped`**: `transform: rotateY(180deg)`.
 - **`.card-face`**: `position: absolute; inset: 0`, `backface-visibility: hidden`.
 - **`.card-face.front`**: `transform: rotateY(0deg)`.
@@ -176,22 +187,7 @@ The repository is configured for one-click deployment on Vercel:
 2. Import the project into [Vercel](https://vercel.com).
 3. Set the Environment Variable:
    - `GROQ_API_KEY`: `gsk_your_groq_api_key_here`
-4. Deploy! `vercel.json` and `api/generate.js` handle serverless routing automatically.
-
----
-
-## 🤖 Honest AI-Usage Disclosure
-
-In accordance with Section 8 of the assignment guidelines:
-- **What AI was used for**:
-  - Scaffolding the initial Vite + Tailwind configuration files.
-  - Refining the pure-CSS 3D transform vendor prefix matrix (`transform-style: preserve-3d`, `backface-visibility: hidden`).
-  - Generating sample test assertions and Chrome DevTools Protocol automation scripts to verify the 3D flip and mobile viewports.
-- **What was designed independently**:
-  - The monotonic `requestId` ref race-condition guard preventing stale response overwrites.
-  - The defensive validation pipeline and separation of concerns (`api.js`, `validateResult.js`, `FlashcardDeck.jsx`, `QuizMode.jsx`, `ResultView.jsx`).
-  - The targeted quiz re-test state machine (`wrongCards` filtering and round resets).
-  - The strict Quizlet-inspired anti-AI-slop design system.
+4. Deploy! `vercel.json`, `api/generate.js`, and `api/extract.js` handle serverless routing automatically.
 
 ---
 
@@ -207,13 +203,6 @@ In accordance with Section 8 of the assignment guidelines:
 | PromptInput, Text-Only EmptyState & State Machine Orchestration | 30 mins | 25 mins |
 | Quiz Mode, Scoring & Wrong-Answer Re-Test Workflow | 30 mins | 30 mins |
 | Mobile Responsive Audit (375px) & Styling Polish | 20 mins | 25 mins |
+| Document Upload (.pdf, .txt, .md) & Topic Explorer Features | 35 mins | 30 mins |
 | Production Bundle Key Audit & Documentation (`README.md`) | 20 mins | 20 mins |
-| **Total** | **~3.5 hours** | **~3.25 hours** |
-
----
-
-## ⚠️ Known Limitations & Future Enhancements
-
-1. **Session Scope**: Cards and quiz scores reside in React component memory; refreshing the page resets the session. (Persistent local storage could be added as a stretch goal).
-2. **Context Window Limits**: Extremely long textbook chapters pasted into the textarea may exceed single-turn Groq completion tokens; chunking could be implemented for multi-page documents.
-3. **Keyboard Shortcuts**: Spacebar to flip and arrow keys to navigate could be layered on top of the established touch controls as an optional accessibility stretch enhancement.
+| **Total** | **~4.0 hours** | **~3.75 hours** |
