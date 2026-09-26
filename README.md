@@ -4,6 +4,7 @@ A reliable, clean, production-ready AI-powered study assistant built for the **F
 
 It is **strictly not a chatbot**: raw model text never reaches the interface. All LLM responses are constrained to a locked JSON schema, defensively validated, and rendered through two dedicated interactive modes: a **Flashcard Deck** with pure-CSS 3D flip physics and a **Quiz Mode** with live scoring and targeted wrong-answer re-testing.
 
+## Live Demo Link: https://project-smoky-nine-29.vercel.app/
 ---
 
 ##  Quick Start (Local Setup)
