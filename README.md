@@ -4,8 +4,10 @@ A reliable, clean, production-ready AI-powered study assistant built for the **F
 
 It is **strictly not a chatbot**: raw model text never reaches the interface. All LLM responses are constrained to a locked JSON schema, defensively validated, and rendered through two dedicated interactive modes: a **Flashcard Deck** with pure-CSS 3D flip physics and a **Quiz Mode** with live scoring and targeted wrong-answer re-testing.
 
+## Live Demo Link: https://project-smoky-nine-29.vercel.app/
 ---
 
+<<<<<<< HEAD
 ## ✨ Core Creation Workflows
 
 1. **Study Notes (Direct Input)**: Paste lecture notes, textbook summaries, definitions, or article excerpts into the clean notes editor.
@@ -15,6 +17,9 @@ It is **strictly not a chatbot**: raw model text never reaches the interface. Al
 ---
 
 ## ⚡ Quick Start (Local Setup)
+=======
+##  Quick Start (Local Setup)
+>>>>>>> b9487f80bef9bb6ef223532ab51714d1099a9b30
 
 ### Prerequisites
 - **Node.js**: v18+ (tested on Node.js v24.19 LTS)
@@ -46,7 +51,7 @@ This runs both the Express backend proxy (`http://localhost:3001`) and Vite fron
 
 ---
 
-## 🛡️ Architecture & Security (Zero Key Leakage)
+##  Architecture & Security (Zero Key Leakage)
 
 ```mermaid
 flowchart TD
@@ -74,7 +79,7 @@ The frontend code contains **zero** references to `GROQ_API_KEY` or `VITE_GROQ_A
 
 ---
 
-## 🔒 Locked Data Shape & Defensive Validation
+##  Locked Data Shape & Defensive Validation
 
 The application requires strict adherence to this locked JSON schema:
 
@@ -99,7 +104,7 @@ Following the official assignment reference pattern, `validateResult(raw)` is a 
 
 ---
 
-## 🔄 Mandatory Pure-CSS 3D Flip Card System
+##  Mandatory Pure-CSS 3D Flip Card System
 
 Zero JavaScript animation libraries or bloated CSS frameworks are used for the 3D flip. The layout conforms strictly to the assignment's locked structure:
 
@@ -131,7 +136,7 @@ Zero JavaScript animation libraries or bloated CSS frameworks are used for the 3
 
 ---
 
-## 🎯 Quiz Mode & "Re-Test Only Wrong Answers"
+##  Quiz Mode & "Re-Test Only Wrong Answers"
 
 The interactive Quiz Mode enables focused recall and spaced self-testing:
 1. **Show Question**: Displays question card with answer hidden.
@@ -143,7 +148,7 @@ The interactive Quiz Mode enables focused recall and spaced self-testing:
 
 ---
 
-## 🚨 Failure Handling Resilience Matrix
+##  Failure Handling Resilience Matrix
 
 | Failure Mode | Trigger / Root Cause | Handling Mechanism | User-Visible Feedback |
 | :--- | :--- | :--- | :--- |
@@ -156,7 +161,7 @@ The interactive Quiz Mode enables focused recall and spaced self-testing:
 
 ---
 
-## 🎨 Anti-AI-Slop Design System (Quizlet-Inspired)
+##  Anti-AI-Slop Design System (Quizlet-Inspired)
 
 Designed intentionally to feel like a high-focus academic web tool, avoiding generic AI slop:
 - **Soft Slate Canvas**: Clean `bg-slate-50` backdrop with a white centered card.
@@ -180,18 +185,32 @@ Designed intentionally to feel like a high-focus academic web tool, avoiding gen
 
 ---
 
-## 🚀 Deployment (Vercel)
 
+<<<<<<< HEAD
 The repository is configured for one-click deployment on Vercel:
 1. Push your repository to GitHub.
 2. Import the project into [Vercel](https://vercel.com).
 3. Set the Environment Variable:
    - `GROQ_API_KEY`: `gsk_your_groq_api_key_here`
 4. Deploy! `vercel.json`, `api/generate.js`, and `api/extract.js` handle serverless routing automatically.
+=======
+## Honest AI-Usage Disclosure
+
+In accordance with Section 8 of the assignment guidelines:
+- **What AI was used for**:
+  - Scaffolding the initial Vite + Tailwind configuration files.
+  - Refining the pure-CSS 3D transform vendor prefix matrix (`transform-style: preserve-3d`, `backface-visibility: hidden`).
+  - Generating sample test assertions and Chrome DevTools Protocol automation scripts to verify the 3D flip and mobile viewports.
+- **What was designed independently**:
+  - The monotonic `requestId` ref race-condition guard preventing stale response overwrites.
+  - The defensive validation pipeline and separation of concerns (`api.js`, `validateResult.js`, `FlashcardDeck.jsx`, `QuizMode.jsx`, `ResultView.jsx`).
+  - The targeted quiz re-test state machine (`wrongCards` filtering and round resets).
+  - The strict Quizlet-inspired anti-AI-slop design system.
+>>>>>>> b9487f80bef9bb6ef223532ab51714d1099a9b30
 
 ---
 
-## ⏱️ Time Spent Breakdown
+##  Time Spent Breakdown
 
 | Task Area | Estimated Time | Actual Time |
 | :--- | :--- | :--- |
@@ -205,4 +224,16 @@ The repository is configured for one-click deployment on Vercel:
 | Mobile Responsive Audit (375px) & Styling Polish | 20 mins | 25 mins |
 | Document Upload (.pdf, .txt, .md) & Topic Explorer Features | 35 mins | 30 mins |
 | Production Bundle Key Audit & Documentation (`README.md`) | 20 mins | 20 mins |
+<<<<<<< HEAD
 | **Total** | **~4.0 hours** | **~3.75 hours** |
+=======
+| **Total** | **~3.5 hours** | **~3.25 hours** |
+
+---
+
+##  Known Limitations & Future Enhancements
+
+1. **Session Scope**: Cards and quiz scores reside in React component memory; refreshing the page resets the session. (Persistent local storage could be added as a stretch goal).
+2. **Context Window Limits**: Extremely long textbook chapters pasted into the textarea may exceed single-turn Groq completion tokens; chunking could be implemented for multi-page documents.
+3. **Keyboard Shortcuts**: Spacebar to flip and arrow keys to navigate could be layered on top of the established touch controls as an optional accessibility stretch enhancement.
+>>>>>>> b9487f80bef9bb6ef223532ab51714d1099a9b30
